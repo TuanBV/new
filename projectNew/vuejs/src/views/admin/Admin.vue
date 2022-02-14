@@ -1,9 +1,4 @@
 <template>
-  <!-- <div v-if="loading">
-    <div style="text-align: center;margin-top: 200px">
-        Loading...<div id="loading" class="spinner-border text-warning" style="width: 40px;height: 40px;" role="status"></div>
-    </div>
-  </div> -->
   <div id="admin">
     <div class="container-sm">
       <div class="row mb-2">
@@ -29,8 +24,7 @@
         <div class="col-2">
           <input type="text" class="form-control"  placeholder="By name" v-model="param.name">
         </div>
-        <button class="btn col-2" style="background-color: #0C9723;color: white;font-weight: 500;" type="button"
-          id="filterCondition">Filter</button>
+        <button class="btn col-2" style="background-color: #0C9723;color: white;font-weight: 500;" @click="load_user()">Filter</button>
       </div>
       <h3 class="col-12 text-center">List User</h3>
       <div class="row mb-3">
@@ -48,8 +42,8 @@
             <option value="8">Get 8 record</option>
           </select>
         </div>
-        <div class="col-3" style="line-height: 38px;" id="sumfilter">
-          <!-- load sum filter user -->
+        <div class="col-2" style="line-height: 38px;">
+          Filter {{ number_record }} record
         </div>
       </div>
       <table class="table table-striped border" width="100%">
@@ -83,6 +77,7 @@
         </tbody>
       </table>
     </div>
+    <div class="container load" ></div>
     <!-- load pagination -->
       <div class="container" style="margin-top: 100px;">
         <ul class="pagination pagination-sm" v-if="pages>1">
@@ -101,11 +96,11 @@ import { useLoading } from 'vue-loading-overlay'
 export default {
   setup() {
     const users = ref([]);
-    const loading = ref(true)
     const obj = JSON.parse(localStorage.getItem('user'))[0];
     const username = obj.username;
     const router = useRouter();
     const pages = ref(0);
+    const number_record = ref(0);
     const isloading = useLoading();
     // condition filter
     const param = reactive({
@@ -138,18 +133,25 @@ export default {
     // load user
     const load_user = async () => {
       try {
-        const loader = isloading.show();
-        // router.push({query: {'page': param.page, 'limit': param.limit}});
+        const loader = isloading.show({
+          fullPage: true,
+          canCancel: true,
+          useSlot: false,
+          loader: 'bars',
+          timeout: 3000, //ms
+          color: '#00ab00',
+          bgColor: '#4b4b4b',
+          height: 64,
+          width: 64,
+        });
         const response = await axios.get('http://localhost:8000/admin/'+ username +'/users', {params : param}, {headers: {token: document.cookie.split('=')[1]}});
         users.value = response.data.data
+        number_record.value = response.data.count
         pages.value = Math.ceil(response.data.count/param.limit);
-        loading.value = true;
         loader.hide();
 
       } catch (error) {
         console.log(error.message);
-      }finally{
-        loading.value = false;
       }
     }
     onMounted(() => {
@@ -164,7 +166,7 @@ export default {
       reset_condition,
       delete_user,
       users,
-      loading
+      number_record
     }
   }
 }

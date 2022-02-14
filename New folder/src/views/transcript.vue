@@ -118,13 +118,13 @@
 import axios from 'axios'
 import { reactive, ref } from '@vue/reactivity';
 import { onMounted } from '@vue/runtime-core';
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 export default {
   setup() {
     const transcripts = ref([]);
     const conditions = ref([]);
     const loading = ref(true)
-    const router = useRouter();
+    // const router = useRouter();
     
     const pages = ref(0);
 
@@ -154,7 +154,7 @@ export default {
     // load data
     const load_data = async () => {
       try {
-        router.push({'path':'/transcript',query: {'page': param.page, 'limit': param.limit}});
+        // router.push({query: {'page': param.page, 'limit': param.limit}});
         const response = await axios.get('http://localhost:8000/user/'+ username +'/transcript', {params : param}, {headers: {token: document.cookie.split('=')[1]}});
         transcripts.value = response.data.data;
         pages.value = Math.ceil(response.data.count/param.limit);

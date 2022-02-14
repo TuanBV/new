@@ -12,7 +12,7 @@
           <select class="form-select" aria-label="Default select example" v-model="param.nameTime">
             <option value='all'>By name time</option>
             <!-- load name time rate -->
-            <option v-for="condition in conditions" v-bind:key="condition" :value="param.nameTime">
+            <option v-for="condition in conditions" v-bind:key="condition" :value="condition.nameTime">
               {{ condition.nameTime }}
             </option>
           </select>
@@ -32,7 +32,7 @@
         <div class="col-2">
           <input type="number" class="form-control" placeholder="By score manager..." v-model="param.scoreManager" min="0" max="100">
         </div>
-        <button class="btn col-2" style="background-color: #0c9723; color: white; font-weight: 500">Filter Transcript</button>
+        <button class="btn col-2" style="background-color: #0c9723; color: white; font-weight: 500" @click="load_data()">Filter Transcript</button>
       </div>
       <!-- <div class="row ms-0 mb-2 fade record">Record number : <p id="record"></p> </div> -->
     </div>
@@ -105,13 +105,10 @@
 import axios from 'axios'
 import { reactive, ref } from '@vue/reactivity';
 import { onMounted } from '@vue/runtime-core';
-import { useRouter } from 'vue-router';
 export default {
-  name: "manager",
   setup() {
     const transcripts = ref([]);
     const conditions = ref([]);
-    const router = useRouter();
     const pages = ref(0);
 
     const obj = JSON.parse(localStorage.getItem('user'))[0];
@@ -138,7 +135,7 @@ export default {
     // load data
     const load_data = async () => {
       try {
-        router.push({'path':'/manager',query: {'page': param.page, 'limit': param.limit}});
+        console.log(param);
         const response = await axios.get('http://localhost:8000/manager/'+ username +'/transcript', {params : param}, {headers: {token: document.cookie.split('=')[1]}});
         transcripts.value = response.data.data;
         pages.value = Math.ceil(response.data.count/param.limit);

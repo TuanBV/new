@@ -141,7 +141,6 @@
 import axios from 'axios'
 import { ref, reactive } from '@vue/reactivity';
 import { onMounted } from '@vue/runtime-core';
-import { useRouter } from 'vue-router';
 export default {
   name: "timerate",
   setup() {
@@ -151,8 +150,6 @@ export default {
     const isShow = ref(false);
 
     const pages = ref(0);
-    const router = useRouter();
-
     const obj = JSON.parse(localStorage.getItem('user'))[0];
     var username = obj.username;
 
@@ -173,7 +170,7 @@ export default {
     }
     const load_timerate = async () => {
       try {
-        router.push({'path':'/time-rate',query: {'page': param.page, 'limit': param.limit}});
+        // router.push({'path':'/time-rate',query: {'page': param.page, 'limit': param.limit}});
         const response = await axios.get('http://localhost:8000/admin/'+ username +'/timerate', {params : param}, {headers: {token: '1111111'} },{ withCredentials: true });
         timerates.value = response.data.data;
         pages.value = Math.ceil(response.data.count/param.limit);
