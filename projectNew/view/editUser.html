@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Information Profile</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="fontawesome-free-5.15.3-web/css/all.css">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+</head>
+
+<body>
+    <!-- headers -->
+    <div class="headers">
+        <nav>
+            <div class="logo">SaiSystem</div>
+            <label for="btn" class="icon">
+                <i class="fa fa-bars" class="btn"></i>
+            </label>
+            <input type="checkbox" name="" id="btn">
+            <ul>
+                <li><a href="index.html" id="home">Home</a></li>
+                <li><a href="transcipt.html">Transcript</a></li>
+                <li class="admin">
+                    <label for="btn-1" class="show">User +</label>
+                    <a href="showUser.html"  class="active">User +</a>
+                    <ul>
+                        <li><a href="createUser.html">Create User</a></li>
+                        <li><a href="showUser.html">List User</a></li>
+                    </ul>
+                </li>
+                <li class="admin">
+                    <label for="btn-1" class="show">Time Rate</label>
+                    <a href="TimeRate.html">Time Rate +</a>
+                    <ul>
+                        <li><a href="createTimeRate.html">Create Time Rate</a></li>
+                        <li><a href="TimeRate.html">List Time Rate</a></li>
+                    </ul>
+                </li>
+                <li class="manager" ><a href="homeManager.html">Manager</a></li>
+                <li><a href="changePassword.html">Change Password</a></li>
+                <li id="logout"><a style="color: white;">LogOut</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Main -->
+    <div class="main">
+        <div class="container">
+            <div class="container mt-5">
+                <div class="row justify-content-md-center">
+                    <div class="col-8">
+                        <div class="col-md-7 col-lg-12" style="text-align: center;">
+                            <h4 class="title pb-3">Update Profile User</h4>
+                            <form class="needs-validation" id="formCreateUser" novalidate="">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="fullname" class="form-label">Full Name</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" id="fullname" placeholder="Full Name"
+                                            name="fullname" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="username" class="form-label">Username <span
+                                                class="">(*)</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" id="username" placeholder="Username"
+                                            name="username" readonly/>
+                                        <p id="alertUsername" class="ms-1" style="color: red"></p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="email" class="form-label">Email <span class="">(*)</span><span
+                                                class="text-danger"></span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="email" class="form-control" id="email" name="email"
+                                            placeholder="you@example.com" readonly/>
+                                        <p id="alertEmail" class="ms-1" style="color: red"></p>
+                                    </div>
+                                </div>
+                                <div class="row" style="text-align: unset;">
+                                    <div class="col-4">
+                                        <label for="Age" class="form-label">Birthday<span
+                                                class="text-muted"></span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="date" class="form-control w-50" id="birthday" name="birthday" 
+                                            placeholder="10/05/1998" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="address" class="form-label">Address</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" id="address" placeholder="Ha Noi"
+                                            required="" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label for="position" class="form-label">Position <span
+                                                class="">(*)</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <label for="rdoPosition3">Member</label>
+                                                <input type="radio" name="rdoPosition" id="rdoPosition3"
+                                                    class="rdoPosition3" value="3">
+                                                <p id="alertPosition" class="ms-1" style="color: red"></p>
+                                            </div>
+                                            <div class="col-4">
+                                                <label for="rdoPosition2">Manager</label>
+                                                <input type="radio" name="rdoPosition" id="rdoPosition2"
+                                                    class="rdoPosition2" value="2">
+                                            </div>
+                                            <div class="col-4" id="position">
+                                                <label for="rdoPosition1">Admin</label>
+                                                <input type="radio" name="rdoPosition" id="rdoPosition1"
+                                                    class="rdoPosition1" value="1">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="my-4" />
+                                <button class="w-50 btn btn-lg mt-5" type="button" id="updateUser"
+                                    style="font-weight: 500;background-color: #77af3e; color: white;">Update
+                                    User</button>
+                            </form>
+                            <div class="col-3">
+                                <div class="modal">
+                                    <div class="modal-content" style="width: 400px">
+                                        <span class="close">&times;</span>
+                                        <p>Cập nhật thông tin user thành công!!!<i style="color: green"
+                                                class="fas fa-check-circle"></i></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- loading -->
+    <div class="loader" style="width: 100%;text-align: center;">
+        <div id="loading" class="spinner-border text-warning" style="width: 100px;height: 100px;" role="status"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script>
+        // check position
+        function checkPosition() {
+            idposition = $("input[type='radio'][name='rdoPosition']:checked").val();
+            if (idposition != null){
+                return true;
+            }
+        }
+        $(document).ready(function () {
+            checkUrl();
+            var param = location.href.split("=");
+            var id = param[1];
+            getData(id);
+            // click btn update user
+            $('#updateUser').click(function () {
+                if($("#formCreateUser").valid()){
+                    if (checkPosition()){
+                        updateUser(id);
+                    }
+                }else{
+                    return;
+                    }
+            });
+        });
+        //get information user for form by id
+        function getData(id) {
+            var username = document.cookie.split("=");
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8000/admin/"+username[1]+"/users/" + id,
+                dataType: 'json',
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                beforeSend: function(){
+                    $('.loader').show();
+                },
+                success: function (resp) {
+                    document.getElementById('fullname').value = resp[0]['fullname'];
+                    document.getElementById('username').value = resp[0]['username'];
+                    document.getElementById('email').value = resp[0]['email'];
+                    document.getElementById('birthday').value = resp[0]['birthday'];
+                    document.getElementById('address').value = resp[0]['address'];
+                    if (resp[0]['idposition'] == 3) {
+                        $('.rdoPosition3').attr('checked', true);
+                        $('#position').hide();
+                    }
+                    if (resp[0]['idposition'] == 2) {
+                        $('.rdoPosition2').attr('checked', true);
+                        $('#position').hide();
+                    }
+                    if (resp[0].idposition == 1){
+                        $('.rdoPosition1').attr('checked', true);
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                },
+                complete: function(){
+                    $('.loader').hide();
+                }
+            });
+        }
+        // function update information user
+        function updateUser(id) {
+            var data = new Object();
+            username = document.cookie.split("=");
+            data.fullname = $('#fullname').val();
+            data.birthday = $('#birthday').val();
+            data.address = $('#address').val();
+            data.idposition = $("input[type='radio'][name='rdoPosition']:checked").val();
+            $.ajax({
+                type: "PUT",
+                url: "http://127.0.0.1:8000/admin/"+username[1]+"/users/" + id,
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                beforeSend: function(){
+                    $('.loader').show();
+                },
+                success: function (resp) {
+                    if (resp.status.match(200)) {
+                        $(".modal").show();
+                        $(".close").click(function () {
+                            $(".modal").hide();
+                            window.location.href = "http://127.0.0.1:5500/view/showUser.html";
+                        });
+                        $(window).on("click", function (e) {
+                            if ($(e.target).is(".modal")) {
+                                $(".modal").hide();
+                            }
+                            window.location.href = "http://127.0.0.1:5500/view/showUser.html";
+                        });
+                    }
+                },
+                error: function () {
+                    console.log("error");
+                },
+                complete: function(){
+                    $('.loader').hide();
+                },
+            });
+        }
+        function checkUrl(){
+            const obj = JSON.parse(localStorage.getItem('user'));
+            if (obj[0].idposition != 1){
+                location.href = "/view/index.html";
+            }
+        }
+    </script>
+</body>
+
+</html>

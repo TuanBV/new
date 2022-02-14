@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit time rate</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="fontawesome-free-5.15.3-web/css/all.css">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+</head>
+<body>
+    <!-- header -->
+    <div class="headers">
+        <nav>
+            <div class="logo">SaiSystem</div>
+            <label for="btn" class="icon">
+                <i class="fa fa-bars" class="btn"></i>
+            </label>
+            <input type="checkbox" name="" id="btn">
+            <ul>
+                <li><a href="index.html" id="home">Home</a></li>
+                <li><a href="transcipt.html">Transcript</a></li>
+                <li class="admin">
+                    <label for="btn-1" class="show">User +</label>
+                    <a href="showUser.html">User +</a>
+                    <ul>
+                        <li><a href="createUser.html">Create User</a></li>
+                        <li><a href="showUser.html">List User</a></li>
+                    </ul>
+                </li>
+                <li class="admin">
+                    <label for="btn-1" class="show">Time Rate</label>
+                    <a href="TimeRate.html"  class="active">Time Rate +</a>
+                    <ul>
+                        <li><a href="createTimeRate.html">Create Time Rate</a></li>
+                        <li><a href="TimeRate.html">List Time Rate</a></li>
+                    </ul>
+                </li>
+                <li class="manager"><a href="homeManager.html">Manager</a></li>
+                <li><a href="changePassword.html">Change Password</a></li>
+                <li id="logout"><a style="color: white;">LogOut</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Main -->
+    <div class="main">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-8">
+                    <form id="formEditTimeRate" method="get">
+                        <h3 class="title">Edit Information Time Rate</h3>
+                        <div class="col-sm-6" id="formUpdate">
+                            <label for="nameTime" class="form-label">Name Time Rate</label>
+                            <input type="text" class="form-control" name="nameTime" id="nameTime"
+                                oninput="checkNameTime()" required>
+                            <p id="alert" style="font-size: 13px;color: red;display:none;"></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="time" class="form-label">Time Start</label>
+                            <input type="date" class="form-control" name="timeRateStart" id="timeRateStart">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="time" class="form-label">Time End</label>
+                            <input type="date" class="form-control" name="timeRateEnd" id="timeRateEnd">
+                        </div>
+                        <br>
+                        <button type="button" class="btn btn-primary" id="updateTime" data-bs-toggle='modal'
+                            data-bs-target='#exampleModal'>Update Information</button>
+                        <!-- onclick="return validateCreateTimeRate();"  -->
+                        <button type="button" class="btn btn-danger" id="backTimeRate">Cancel</button>
+                    </form>
+                    <div class="col-3">
+                        <div class="modal">
+                            <div class="modal-content" style="width: 400px;">
+                                <span class="close">&times;</span>
+                                <p>Cập nhật kì đánh giá !!! <i style='color:green;' class='fas fa-check-circle'></i>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal" id="exampleModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Cập nhật kì đánh giá <i
+                                            class="fas fa-plus-square" style="font-size: 30px; color: green;"></i> </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" id="modalbody">
+                                    <!-- load information time rate in modal -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="SaveChanges">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h5 class="modal-title" style="text-align: center;" id="exampleModalLabel">Cập nhật thành công ! <i class="fas fa-check-circle"
+                                            style="font-size: 30px; color: green;"></i> </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="modal1">
+                            <div class="modal-content" style="width: 400px;">
+                                <span class="close">&times;</span>
+                                <p>Name time already exist ! <i style='color:red;'
+                                        class='fas fa-exclamation-circle'></i>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- loading -->
+    <div class="loader" style="width: 100%;text-align: center;">
+        <div id="loading" class="spinner-border text-warning" style="width: 100px;height: 100px;" role="status"></div>
+      </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script>
+        // check name time
+        function checkNameTime() {
+            var data = new Object();
+            var param = location.href.split("=");
+            data.idtime = param[1];
+            data.nameTime = $("#nameTime").val();
+            if(getNameTime(data) == false){
+                $("#alert").html("Name time already exist!");
+                $("#alert").show();
+            }else{
+                $("#alert").hide();
+            }
+            return getNameTime(data);
+        }
+        $(document).ready(function () {
+            checkUrl();
+            var param = location.href.split("=");
+            var username = document.cookie.split("=");
+            var id = param[1];
+            var data = new Object();
+            data.id = id;
+            data.username = username[1];
+            getData(data);
+        });
+        // get data time rate by id
+        function getData(data) {
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8000/admin/"+data.username+"/timerate/"+data.id,
+                data: data,
+                dataType: 'json',
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Basic " + btoa(data.username)
+                },
+                beforeSend: function(){
+                    $('.loader').show();
+                },
+                success: function (resp) {
+                    document.getElementById('nameTime').value = resp[0]['nameTime'];
+                    document.getElementById('timeRateStart').value = resp[0]['timeStart'];
+                    document.getElementById('timeRateEnd').value = resp[0]['timeEnd'];
+                    $('#backTimeRate').click(function () {
+                        location.href = "http://127.0.0.1:5500/view/TimeRate.html";
+                    });
+                    $('body').on('click','#updateTime' ,function () {
+                        if ($("#formEditTimeRate").valid()){
+                            if (checkNameTime()){
+                                // show information at modal
+                                var str = "";
+                                str += "<div>Name time : " + document.getElementById('nameTime').value; +" </div>";
+                                str += "<div>Time start : " + document.getElementById('timeRateStart').value; +" </div>";
+                                str += "<div>Time end : " + document.getElementById('timeRateEnd').value; +" </div>";
+                                $("#modalbody").html(str);
+                                // click btn save change
+                                $("#SaveChanges").click(function () {
+                                    $('#exampleModal').removeClass("show").addClass("fade");
+                                    $('#exampleModal1').toggle();
+                                    $('.btn-close').click(function () {
+                                        updateTimeRate(data.id);
+                                    });
+                                });
+                            }else{
+                                $('.modal').hide();
+                                return;
+                            }
+                        }else{
+                            return;
+                        }
+                    });
+                },
+                error: function (resp) {
+                    if (resp.status == 400) {
+                        $('.modal1').show();
+                        $('.close').click(function () {
+                            $('.modal1').hide();
+                        });
+                        $(window).on('click', function (e) {
+                            if ($(e.target).is('.modal1')) {
+                                $('.modal1').hide();
+                            }
+                        });
+                    }
+                },
+                complete: function(){
+                    $('.loader').hide();
+                },
+            });
+        }
+        // function update information for time rate
+        function updateTimeRate(id) {
+            var data = new Object();
+            username = document.cookie.split("=");
+            data.username = username[1];
+            data.nameTime = document.getElementById("nameTime").value;
+            data.timeStart = document.getElementById('timeRateStart').value;
+            data.timeEnd = document.getElementById('timeRateEnd').value;
+            data.id = id;
+            $.ajax({
+                url: "http://127.0.0.1:8000/admin/"+data.username+"/timerate/"+data.id,
+                type: 'PUT',
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                beforeSend: function(){
+                    $('.loader').show();
+                },
+                success: function (resp) {
+                    window.location.href = "http://127.0.0.1:5500/view/TimeRate.html";
+                },
+                error: function (resp) {
+                    console.log("error");
+                },
+                complete: function(){
+                    $('.loader').hide();
+                },
+            });
+        }
+        // function check name time already exist
+        function getNameTime(data) {
+            var result;
+            var username = document.cookie.split("=");
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8000/nametime",
+                data : data,
+                contentType: "application/json",
+                dataType: "json",
+                async: false,
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                success: function (resp) {
+                    result = true;
+                },
+                error: function(resp){result = false;}
+            });
+            return result;
+        }
+        function checkUrl(){
+            const obj = JSON.parse(localStorage.getItem('user'));
+            if (obj[0].idposition != 1){
+                location.href = "/view/index.html";
+            }
+        }
+    </script>
+</body>
+
+</html>

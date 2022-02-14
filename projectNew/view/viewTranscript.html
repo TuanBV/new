@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điểm Mới</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="fontawesome-free-5.15.3-web/css/all.css">
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+</head>
+<body>
+    <!--Create Header of Website-->
+    <div class="headers">
+        <nav>
+            <div class="logo">SaiSystem</div>
+            <label for="btn" class="icon">
+                <i class="fa fa-bars" class="btn"></i>
+            </label>
+            <input type="checkbox" name="" id="btn">
+            <ul>
+                <li><a href="index.html" id="home">Home</a></li>
+                <li><a href="transcipt.html">Transcript</a></li>
+                <li class="admin">
+                    <label for="btn-1" class="show">User +</label>
+                    <a href="showUser.html">User +</a>
+                    <ul>
+                        <li><a href="createUser.html">Create User</a></li>
+                        <li><a href="showUser.html">List User</a></li>
+                    </ul>
+                </li>
+                <li class="admin">
+                    <label for="btn-1" class="show">Time Rate</label>
+                    <a href="TimeRate.html">Time Rate +</a>
+                    <ul>
+                        <li><a href="createTimeRate.html">Create Time Rate</a></li>
+                        <li><a href="TimeRate.html">List Time Rate</a></li>
+                    </ul>
+                </li>
+                <li class="manager"><a href="homeManager.html" class="active">Manager</a></li>
+                <li><a href="changePassword.html">Change Password</a></li>
+                <li id="logout"><a style="color: white;">LogOut</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Main -->
+    <div class="main">
+        <div class="container">
+            <table class="table table-striped border" style="width: 80%; font-weight: 400; line-height: 50px"
+                id="informationUser">
+                <!-- load infor user -->
+            </table>
+            <hr class="my-4" />
+        </div>
+        <div class="container">
+            <h3 class="col-12 text-center text-uppercase my-3" style="font-weight: 600;" id="nameTranscript"></h3>
+            <form action="#" style="margin-bottom: 200px;" onload="validateMaxValue()">
+                <table class="table border transcipt" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th style="width:15%;">Mục tiêu/Nhiệm vụ</th>
+                            <th style="width:40%;">Tiêu chuẩn đánh giá</th>
+                            <th style="width:10%;">Mục tiêu</th>
+                            <th style="width:10%;">Kết quả</th>
+                            <th style="width:10%;">Đánh giá</th>
+                            <th style="width:10%;">Nhận xét</th>
+                        </tr>
+                    </thead>
+                    <tbody id="loadTranscriptMember">
+                        <!-- load transcript Member -->
+                    </tbody>
+                    <tbody id="resultTranscript">
+                        <!-- get result transcript -->
+                    </tbody>
+                    <tbody id="note">
+                        <!-- load note -->
+                    </tbody>
+                    <tbody id="opinionMember" style="border: none;">
+                        <!-- load opinion Member -->
+                    </tbody>
+                </table>
+                <div class="row mt-5">
+                    <div class="col-12" style="text-align: center;" id="buttonManager">
+                        <!-- load button -->
+                    </div>
+                </div>
+            </form>
+            <div class="col-3">
+                <div class="modal1" style="margin: 0;">
+                    <div class="modal-content" style="width: 400px; ">
+                        <span class="close">&times;</span>
+                        <p id="content" style="color: red;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- loading -->
+    <div class="loader" style="width: 100%;text-align: center;">
+        <div id="loading" class="spinner-border text-warning" style="width: 100px;height: 100px;" role="status"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            checkUrl();
+            var username = document.cookie.split("=");
+            username = username[1];
+            var param = location.href.split("=");
+            var id = param[1];
+            getData(id);
+            loadTranscriptMember(id);
+            // click btn back
+            $("body").on("click", "#backHomeManager", function (username) {
+                location.href = "/view/detailTimeRate.html?id="+getData(id);
+            });
+        });
+        // get infor transcript by id
+        function getData(id) {
+            var idtime;
+            var username = document.cookie.split("=");
+            var data = new Object();
+            data.id = id;
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8000/user/"+username[1]+"/transcript/"+id,
+                data: data,
+                dataType: "json",
+                async: false,
+                contentType: "application/json",
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                beforeSend: function(){
+                    $('.loader').show();
+                },
+                success: function (resp) {
+                    idtime = resp[0].idtime;
+                    var str = "";
+                    str += "<tr>";
+                    str += "<th colspan='2'>Id Member : </th>";
+                    str += "<td colspan='2'> VN" + resp[0].iduser + "</td>";
+                    str += "<th>Name Member :</th>";
+                    str += "<td>" + resp[0].fullname + "</td>";
+                    str += "</tr>";
+                    str += "<tr>";
+                    str += "<th colspan='2'>Position : </th>";
+                    str += "<td colspan='2'>" + resp[0].name.toUpperCase() + "</td>";
+                    str += "</tr>";
+                    str += "<tr>";
+                    str += "<th colspan='2'>Date start :</th>";
+                    str += "<td colspan='2'>" + resp[0].timeStart.slice(8, 10) + "-" + resp[0].timeStart.slice(5, 7) + "-" + resp[0].timeStart.slice(0, 4) + "</td>";
+                    str += "<th>Date end :</th>";
+                    str += "<td>" + resp[0].timeEnd.slice(8, 10) + "-" + resp[0].timeEnd.slice(5, 7) + "-" + resp[0].timeEnd.slice(0, 4) + "</td>";
+                    str += "</tr>";
+                    str += "<tr>";
+                    str += "<th colspan='2'>Censor :</th>";
+                    if (resp[0].censor == null) {
+                        str += "<td colspan='2'>...</td>";
+                    } else {
+                        str += "<td colspan='2'>" + resp[0].censor + "</td>";
+                    }
+                    str += "<th>Status : </th>";
+                    if (resp[0].status == 0) {
+                        str += "<td>Chưa Tạo</td>";
+                    }
+                    else if (resp[0].status == 1) {
+                        str += "<td>Chưa Duyệt</td>";
+                    }
+                    else if (resp[0].status == 2) {
+                        str += "<td>Duyệt</td>";
+                    }
+                    else {
+                        str += "<td>Trả Lại</td>";
+                    }
+                    str += "</tr>";
+                    str += "<tr>";
+                    str += "<th colspan='2'>Time work</th>";
+                    // user enter time work
+                    str += "<td colspan='2'> <input type='date' style='height:40px;margin-top: 1px;margin-bottom: 1px;border-color: #e9ecef;background-color: #e9ecef;text-align: center;' id='timework' value='" + resp[0].timework + "' readonly/></td>";
+                    str += "<th>Time work end</th>";
+                    // user enter time work
+                    str += "<td> <input type='date' style='height:40px;margin-top: 1px;margin-bottom: 1px;border-color: #e9ecef;background-color: #e9ecef;text-align: center;' id='timeworkend' value='" + resp[0].timeworkend + "' readonly/></td>";
+                    str += "</tr>";
+                    $("#informationUser").html(str);
+                    var name = resp[0].nameTranscript;
+                    $('#nameTranscript').html(name);
+                    // load information result sumScoreUser and sumResultManager
+                    var str1 = "";
+                    str1 += "<tr>";
+                    str1 += "<th style='width: 40%' colspan='3'>Total points</th>";
+                    str1 += "<td style='width: 10%'>100</td>";
+                    str1 += "<td style='width: 10%' >" + resp[0].sumScoreUser + "</td>";
+                    str1 += "<td style='width: 10%' id='sumScoreManager'>" + resp[0].sumResultManager + "</td>";
+                    str1 += "<td style='width: 10%'></td>";
+                    str1 += "</tr>";
+                    $("#resultTranscript").html(str1);
+                    var str3="<tr>";
+                    str3+="<td colspan='7'>";
+                    str3+="<div class='row ps-4'>Manager's comments</div>";
+                    if(resp[0].ghichu == '' || resp[0].ghichu == null){
+                        str3+="<textarea name='' style='width: 100%;background-color: #e9ecef;' rows='3' id='ghichu' readonly></textarea>";
+                    }else{
+                        str3+="<textarea name='' style='width: 100%;background-color: #e9ecef;' rows='3' id='ghichu' readonly>"+resp[0].ghichu+"</textarea>";
+                    }
+                    str3+="</td>";
+                    str3+="</tr>";
+                    $('#note').html(str3);
+                    //
+                    var str4 ="<tr>";
+                    str4 +="<td colspan='7'>";
+                    str4 +="<div class='row ps-4'>The Member's opinion is evaluated</div>";
+                    if (resp[0].opinionMember == '' || resp[0].opinionMember == null){
+                        str4 +="<textarea name='' style='width: 100%;background-color: #e9ecef;'' rows='3' readonly></textarea>";
+                    }else{
+                        str4 +="<textarea name='' style='width: 100%;background-color: #e9ecef;'' rows='3' readonly>"+resp[0].opinionMember+"</textarea>";
+                    }
+                    str4 +="</td>";
+                    str4 +="</tr>";
+                    $('#opinionMember').html(str4);
+                    // load button manager
+                    var str2 = "";
+                    str2 += "<input type='button' value='Back Home Manager' id='backHomeManager' class='btn btn-danger w-25'>";
+                    $("#buttonManager").html(str2);
+                },
+                complete: function(){
+                    $('.loader').hide();
+                }
+            });
+            return idtime;
+        }
+        // load data standard
+        function loadTranscriptMember(id) {
+            var username = document.cookie.split("=");
+            var data = new Object();
+            data.id = id;
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8000/user/"+username[1]+"/transcript/"+id,
+                data: data,
+                contentType: "application/json",
+                dataType: "json",
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                beforeSend: function(){
+                    $('.loader').show();
+                },
+                success: function (resp) {
+                    function loadTarget() {
+                        $.ajax({
+                            type: "GET",
+                            url: "http://127.0.0.1:8000/target",
+                            contentType: "application/json",
+                            dataType: "json",
+                            headers: {
+                                "Authorization": "Basic " + btoa(username[1])
+                            },
+                            success: function (resp1) {
+                                var str = "";
+                                $.each(resp1, function (i, item) {
+                                    var count = 1;
+                                    $.each(resp, function (j, itemm) {
+                                        if (item.idtarget == itemm.idtarget) {
+                                            count = count + 1;
+                                        }
+                                    });
+                                    str += "<tr>";
+                                    str += "<th rowspan='" + count + "'>" + (i + 1) + "</th>";
+                                    str += "<th rowspan='" + count + "'>" + item.nameTarget + "</th>";
+                                    str += "</tr>";
+                                    $.each(resp, function (j, itemm) {
+                                        if (item.idtarget == itemm.idtarget) {
+                                            str += "<tr>";
+                                            str += "<td class='tas' style='width: 30%'>" + itemm.nameStandard + "</td >";
+                                            str += "<td style='width: 10%'>" + itemm.scoreStandard + "</td>";
+                                            str += "<td style='width: 10%'><input type='number' style='text-align: center;background-color: #e9ecef;' name='' id='TuDanhGia" + (j + 1) + "' max='" + itemm.TuDanhGia + "' value='" + itemm.TuDanhGia + "' min='0' oninput='loadScore(" + id + ")' readonly></td>";
+                                            str += "<td style='width: 10%'><input type='number' style='text-align: center;background-color: #e9ecef;'  name='' id='QLDanhGia' readonly max='" + itemm.QLDanhGia + "' value='" + itemm.QLDanhGia + "' min='0' oninput='loadScore(" + id + ")' readonly></td>";
+                                            if (itemm.NhanXet == null) {
+                                                str += "<td><textarea name='' style='background-color: #e9ecef;' id='NhanXet' cols='30' rows='2' readonly></textarea></td>";
+                                            }else{
+                                                str += "<td><textarea name='' style='background-color: #e9ecef;' id='NhanXet' cols='30' rows='2' readonly>"+itemm.NhanXet+"</textarea></td>";
+                                            }
+                                            str += "</tr>";
+                                        }
+                                    });
+                                });
+                                $("#loadTranscriptMember").html(str);
+                            }
+                        });
+                    }
+                    loadTarget();
+                },
+                error: function (e) {
+                    console.log(e.message);
+                },
+                complete: function(){
+                    $('.loader').hide();
+                }
+            });
+        }
+        function checkUrl(){
+            const obj = JSON.parse(localStorage.getItem('user'));
+            if (obj[0].idposition != 1){
+                location.href = "/view/index.html";
+            }
+        }
+    </script>
+</body>
+
+</html>

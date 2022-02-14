@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Time Rate New</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="fontawesome-free-5.15.3-web/css/all.css" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+</head>
+
+<body>
+    <!--Create Header of Website-->
+    <div class="headers">
+        <nav>
+            <div class="logo">SaiSystem</div>
+            <label for="btn" class="icon">
+                <i class="fa fa-bars" class="btn"></i>
+            </label>
+            <input type="checkbox" name="" id="btn">
+            <ul>
+                <li><a href="index.html" id="home">Home</a></li>
+                <li><a href="transcipt.html">Transcript</a></li>
+                <li class="admin">
+                    <label for="btn-1" class="show">User +</label>
+                    <a href="showUser.html">User +</a>
+                    <ul>
+                        <li><a href="createUser.html">Create User</a></li>
+                        <li><a href="showUser.html">List User</a></li>
+                    </ul>
+                </li>
+                <li class="admin">
+                    <label for="btn-1" class="show">Time Rate</label>
+                    <a href="TimeRate.html"  class="active">Time Rate +</a>
+                    <ul>
+                        <li><a href="createTimeRate.html">Create Time Rate</a></li>
+                        <li><a href="TimeRate.html">List Time Rate</a></li>
+                    </ul>
+                </li>
+                <li class="manager"><a href="homeManager.html">Manager</a></li>
+                <li><a href="changePassword.html">Change Password</a></li>
+                <li id="logout"><a style="color: white;">LogOut</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Main -->
+    <div class="main">
+        <div class="container mt-5">
+            <div class="row justify-content-md-center">
+                <div class="col-8">
+                    <form id="formTimeRate">
+                        <h3 class="title">Create Time Rate New</h3>
+                        <div class="col-sm-6">
+                            <label for="" class="form-label">Name Time Rate <span class="" style="font-size: 12px">(Required)</span></label>
+                            <input type="text" class="form-control" name="nameTime" id="nameTime"
+                                oninput="checkNameTime()" placeholder="Name time rate" required />
+                            <p id="alert" style="font-size: 13px;color: red;display:none;"></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="time" class="form-label">Time Start <span class="" style="font-size: 12px">(Required)</span></label>
+                            <input type="date" class="form-control" name="timeRateStart" id="timeRateStart" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="time" class="form-label">Time End <span class="" style="font-size: 12px">(Required)</span></label>
+                            <input type="date" class="form-control" name="timeRateEnd" id="timeRateEnd" required />
+                        </div>
+                        <button type="button" class="btn btn-primary mt-3" id="createTimeRate"
+                            style="width: 200px;">Create Time Rate</button>
+                        <button type="button" class="btn btn-danger mt-3 ms-3" style="width: 100px;"
+                            id="backTimeRate">Exit</button>
+                    </form>
+                </div>
+                <div class="modal" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div style="margin-left: 420px;">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5 class="modal-title" style="text-align: center;" id="exampleModalLabel">Tạo kì đánh giá mới thành công! <i class="fas fa-check-circle" style="font-size: 30px; color: green;"></i> </h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="modal1">
+                      <div class="modal-content" style="width: 400px;">
+                        <span class="close">&times;</span>
+                        <p><span id="content"></span> <i style="color: red;" class="fas fa-exclamation-circle"></i></p>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    <!-- loading -->
+    <div class="loader" style="width: 100%;text-align: center;">
+        <div id="loading" class="spinner-border text-warning" style="width: 100px;height: 100px;" role="status"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+    <script>
+        // check name time already exist ?
+        function checkNameTime() {
+            var data = new Object();
+            data.nameTime = $("#nameTime").val();
+            if(getNameTime(data) == false){
+                $("#alert").html("Name time already exist!");
+                $("#alert").show();
+            }else{
+                $("#alert").hide();
+            }
+            getNameTime(data);
+        }
+        $(document).ready(function () {
+            checkUrl();
+            // click button create time rate
+            $('#createTimeRate').click(function () {
+                if ($("#formTimeRate").valid()){
+                    addTimeRate();
+                }else{
+                    return;
+                }
+            });
+            // click button back
+            $("body").on("click", "#backTimeRate", function (username) {
+                $('body').load("TimeRate.html");
+            });
+        });
+        // function add time rate new
+        function addTimeRate() {
+            var timeRate = new Object();
+            timeRate.nameTime = $('#nameTime').val();
+            timeRate.timeStart = $('#timeRateStart').val();
+            timeRate.timeEnd = $('#timeRateEnd').val();
+            var username = document.cookie.split("=");
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8000/admin/"+username[1]+"/timerate",
+                data: JSON.stringify(timeRate),
+                contentType: "application/json",
+                dataType: "json",
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                beforeSend: function(){
+                    $(".loader").show();
+                },
+                success: function (resp) {
+                    if (resp.status.match(200)) {
+                        $('.modal').show();
+                        $('.btn-close').click(function () {
+                            $('.modal').hide();
+                            window.location.href = "http://127.0.0.1:5500/view/TimeRate.html";
+                        });
+                        $(window).on('click', function (e) {
+                            if ($(e.target).is('.modal')) {
+                                $('.modal').hide();
+                                window.location.href = "http://127.0.0.1:5500/view/TimeRate.html";
+                            }
+                        });
+                    }
+                },
+                error: function (resp) {
+                    if (resp.status == 400) {
+                        $('#content').html(resp.responseJSON.content);
+                        $('.modal1').show();
+                        $('.close').click(function () {
+                            $('.modal1').hide();
+                        });
+                        $(window).on('click', function (e) {
+                            if ($(e.target).is('.modal1')) {
+                                $('.modal1').hide();
+                            }
+                        });
+                    }
+                },
+                complete: function(){
+                    $(".loader").hide();
+                }
+            });
+        }
+        // function check name time
+        function getNameTime(data) {
+            data.idtime = -1;
+            var result;
+            var username = document.cookie.split("=");
+            $.ajax({
+                type: "GET",
+                url: "http://127.0.0.1:8000/nametime",
+                data : data,
+                contentType: "application/json",
+                dataType: "json",
+                async: false,
+                headers: {
+                    "Authorization": "Basic " + btoa(username[1])
+                },
+                success: function (resp) {
+                    result = true;
+                },
+                error: function(resp){result = false;}
+            });
+            return result;
+        }
+        function checkUrl(){
+            const obj = JSON.parse(localStorage.getItem('user'));
+            if (obj[0].idposition != 1){
+                location.href = "/view/index.html";
+            }
+        }
+    </script>
+</body>
+
+</html>

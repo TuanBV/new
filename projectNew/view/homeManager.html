@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Danh Sạch Bảng Điểm</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="fontawesome-free-5.15.3-web/css/all.css" />
+  <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+</head>
+
+<body>
+  <!--Create Header of Website-->
+  <div class="headers">
+    <nav>
+        <div class="logo">SaiSystem</div>
+        <label for="btn" class="icon">
+            <i class="fa fa-bars" class="btn"></i>
+        </label>
+        <input type="checkbox" name="" id="btn">
+        <ul>
+            <li><a href="index.html" id="home">Home</a></li>
+            <li><a href="transcipt.html">Transcript</a></li>
+            <li class="admin">
+                <label for="btn-1" class="show">User +</label>
+                <a href="showUser.html">User +</a>
+                <ul>
+                    <li><a href="createUser.html">Create User</a></li>
+                    <li><a href="showUser.html">List User</a></li>
+                </ul>
+            </li>
+            <li class="admin">
+                <label for="btn-1" class="show">Time Rate</label>
+                <a href="TimeRate.html">Time Rate +</a>
+                <ul>
+                    <li><a href="createTimeRate.html">Create Time Rate</a></li>
+                    <li><a href="TimeRate.html">List Time Rate</a></li>
+                </ul>
+            </li>
+            <li class="manager"><a href="homeManager.html" class="active">Manager</a></li>
+            <li><a href="changePassword.html">Change Password</a></li>
+            <li id="logout"><a style="color: white;">LogOut</a></li>
+        </ul>
+    </nav>
+</div>
+  <!-- Main -->
+  <div class="main">
+    <div class="container">
+      <form method="get">
+        <div class="row mb-2">
+          <div class="col-3">
+            <span class="me-3" style="font-weight: 500;font-size: 18px; ">Filter</span><input type="button"
+              style="font-size: 14px;" class="btn btn-danger" value="Reset Condition" name="resetBtn" id="resetBtn">
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-2">
+            <select id="sel1" class="form-select" aria-label="Default select example" onchange="">
+              <option value='all'>By name time</option>
+              <!-- load name time rate -->
+            </select>
+          </div>
+          <div class="col-2">
+            <select id="sel2" class="form-select" aria-label="Default select example" onchange="">
+              <option value="all">By status</option>
+              <option data-option="2" value="0">Chưa Tạo</option>
+              <option data-option="2" value="1">Chưa Duyệt</option>
+              <option data-option="2" value="2">Đã Duyệt</option>
+              <option data-option="2" value="3">Trả Lại</option>
+            </select>
+          </div>
+          <div class="col-2">
+            <input type="number" class="form-control" placeholder="By score user..." id="scoreUser" min="0">
+          </div>
+          <div class="col-2">
+            <input type="number" class="form-control" placeholder="By score manager..." id="scoreManager" min="0">
+          </div>
+          <button class="btn col-2" style="background-color: #0c9723; color: white; font-weight: 500" type="button"
+            id="filterCondition">
+            Filter Transcript
+          </button>
+        </div>
+        <!-- <div class="row ms-0 mb-2 fade record">Record number : <p id="record"></p> </div> -->
+      </form>
+    </div>
+    <div class="container">
+      <h3 class="col-12 text-center">List Transcript</h3>
+      <div class="row mb-3">
+        <div class="col-3">
+          <select id="sel3" class="form-select" aria-label="Default select example" onchange="getRecord()">
+            <option value="nameTranscript">Sort by Name Transcript</option>
+            <option data-option="4" value="username">Sort by Username </option>
+            <option data-option="4" value="status">Sort by Status </option>
+            <option data-option="4" value="sumUserAsc">Sort by Sum User &uarr;</option>
+            <option data-option="4" value="sumUserDesc">Sort by Sum User &darr;</option>
+            <option data-option="4" value="sumManagerAsc">Sort by Sum Manager &uarr;</option>
+            <option data-option="4" value="sumManagerDesc">Sort by Sum Manager &darr;</option>
+          </select>
+        </div>
+        <div class="col-3">
+          <select id="sel" class="form-select" aria-label="Default select example" onchange="getRecord()">
+            <option value="12">Get 12 record</option>
+            <option data-option="4" value="10">Get 10 record</option>
+            <option data-option="4" value="20">Get 20 record</option>
+            <option data-option="4" value="30">Get 30 record</option>
+          </select>
+        </div>
+        <div class="col-3" style="line-height: 38px;" id="sumfilter">
+          <!-- load sum filter transcript -->
+        </div>
+      </div>
+      <table class="table table-striped border" width="100%">
+        <thead>
+          <tr>
+            <th width="10%">#</th>
+            <th width="20%">Name transcipt</th>
+            <th width="10%">Username</th>
+            <th width="10%">Fullname</th>
+            <th width="10%">Status</th>
+            <!-- <th width="10%">Người Duyệt</th> -->
+            <th width="10%">Self-assessment</th>
+            <th width="10%">Points evaluated</th>
+            <th width="10%"></th>
+          </tr>
+        </thead>
+        <tbody id="loadDataManager">
+          <!-- Load data transcript manager -->
+        </tbody>
+      </table>
+    </div>
+    <div class="col-3">
+      <div class="modal">
+        <div class="modal-content" style="width: 400px;">
+          <span class="close">&times;</span>
+          <p id="title-modal" style="color: red;"></p>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="margin-top: 100px;;">
+      <ul class="pagination pagination-sm" id="addPagination">
+        <!-- load pagination -->
+      </ul>
+    </div>
+  </div>
+  
+  <!-- loading -->
+  <div class="loader" style="width: 100%;text-align: center;">
+    <div id="loading" class="spinner-border text-warning" style="width: 100px;height: 100px;" role="status"></div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/bootstrap/bootstrap.min.js"></script>
+  <script>
+    // add active btn pagination
+    function addActive(number){
+      var btnPagination = document.querySelectorAll(".page-item button");
+      if (location.href.split('=')[2] == number){
+        $("#pagination"+number).addClass(" btn-success");
+      }
+    }
+    // get record
+    function getRecord() {
+      var data = new Object();
+      username = document.cookie.split("=");
+      data.username = username[1];
+
+      data.nameTime = $("#sel1 option:selected").val();
+      data.status = $("#sel2 option:selected").val();
+      data.scoreUser = $("#scoreUser").val();
+      data.scoreManager = $("#scoreManager").val();
+      
+      data.pagination = 0;
+      data.limit = $("#sel option:selected").val();
+      data.sort = $("#sel3 option:selected").val();
+      loadTranscript(data);
+    }
+    $(document).ready(function () {
+      checkUrl();
+      //load condition name time when filter
+      loadConditionNameTime();
+      getRecord();
+      // event click btn filter transcript
+      $("body").on("click", "#filterCondition", function () {
+        getRecord();
+      });
+      // click btn reset condition
+      $("body").on("click", "#resetBtn", function () {
+        document.getElementById("sel1").value = "all";
+        document.getElementById("sel2").value = "all";
+        document.getElementById("scoreUser").value = "";
+        document.getElementById("scoreManager").value = "";
+        document.getElementById("sel3").value = "nameTranscript";
+        document.getElementById("sel").value = 12;
+        getRecord();
+      });
+    });
+    // load data transcript
+    function loadTranscript(data) {
+      var username = document.cookie.split("=");
+      $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:8000/manager/"+username[1]+"/transcript",
+        data: data,
+        dataType: "json",
+        contentType: "application/json",
+        headers: {
+          "Authorization": "Basic " + btoa(username[1])
+        },
+        beforeSend: function(){
+          $('.loader').show();
+        },
+        success: function (resp) {
+          page = Math.ceil(resp[0]['count'] / parseInt(data['limit']));
+          var sumfilter = "<p> Has "+resp[0]['count']+" record</p>";
+          $('#sumfilter').html(sumfilter);
+          location.replace("http://127.0.0.1:5500/view/homeManager.html#l="+data.limit+"&p="+data.pagination);
+          var str1 = "";
+          for (var i = 0; i < page; i++) {
+            str1 += "<li class='page-item px-2 py-2'><button class='btn' style='border:1px solid #dee2e6;' id='pagination" + i + "' data-id='" + i + "'>" + (i + 1) + "</button></li>";
+            $('body').on('click', '#pagination' + i, function () {
+              var id = $(this).data('id');
+              data.nameTime = $("#sel1 option:selected").val();
+              data.status = $("#sel2 option:selected").val();
+              data.scoreUser = $("#scoreUser").val();
+              data.scoreManager = $("#scoreManager").val();
+              data.pagination = id;
+              data.limit = document.getElementById("sel").value;
+              loadTranscript(data);
+            });
+          }
+          // add pagination
+          // add data
+          $('#addPagination').html(str1);
+          addActive(data.pagination);
+          var str = "";
+          const d = new Date();
+          $.each(resp, function (i, item) {
+            str += "<tr style='height:56px;'>";
+            str += "<td width='10%'>" + (data.limit*data.pagination + i + 1) + "</td>";
+            str += "<td width='20%'>" + item.nameTranscript + " - "+ d.getFullYear()+"</td>";
+            str += "<td width='10%'>" + item.username + "</td>";
+            str += "<td width='10%'>" + item.fullname + "</td>";
+            if (item.status == 0) {
+              str += "<td width='10%'>Chưa tạo</td>";
+            } else if (item.status == 4) {
+              str += "<td width='10%'>Chưa tạo</td>";
+            } else if (item.status == 1) {
+              str += "<td width='10%'>Chưa Duyệt</td>";
+            } else if (item.status == 2) {
+              str += "<td width='10%'>Đã Duyệt</td>";
+            } else {
+              str += "<td width='10%'>Trả Lại</td>";
+            }
+            if (item.sumScoreUser == null) {
+              str += "<td width='10%'> ... </td>";
+            } else {
+              if (item.status == 4) {
+                str += "<td width='10%'> 0 </td>";
+              } else {
+                str += "<td width='10%'>" + item.sumScoreUser + "</td>";
+              }
+            }
+            if (item.sumResultManager == null) {
+              str += "<td width='10%'> ... </td>";
+            } else {
+              str += "<td width='10%'>" + item.sumResultManager + "</td>";
+            }
+            str += " <td width='10%'>";
+            if (item.status == 1 || item.status == 2) {
+              str += "<button class='btn btn-warning' id='viewTranscript'><a href='/view/confirmScoreboard.html?id="+ item.idtranscript + "'>View</a></button>";
+            } else {
+              str += "<button class='btn btn-warning' id='viewTranscript' style='display:none;'><a href='/view/confirmScoreboard.html?id="+ item.idtranscript + "'>View</a></button>";
+            }
+            str += "</td>";
+            str += "</tr>";
+          });
+          $("#loadDataManager").html(str);
+        },
+        error: function(resp){
+          if (resp.status == 404) {
+            $('#title-modal').html("Không có bảng điểm !");
+            document.getElementById("sel1").value = "all";
+            document.getElementById("sel2").value = "all";
+            document.getElementById("scoreUser").value = "";
+            document.getElementById("scoreManager").value = "";
+            $('.modal').show();
+            $('.close').on('click', function () {
+              $('.modal').hide();
+            });
+            $(window).on('click', function (e) {
+              if ($(e.target).is('.modal')) {
+                $('.modal').hide();
+              }
+            });
+          }
+          if (resp.status == 401){
+            location.href = "/view/index.html";
+          }
+        },
+        complete: function(){
+          $('.loader').hide();
+        }
+      });
+    }
+    // load condition by name when filter
+    function loadConditionNameTime() {
+      var username = document.cookie.split("=");
+      $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:8000/condition-nametime",
+        contentType: "application/json",
+        dataType: "json",
+        headers: {
+          "Authorization": "Basic " + btoa(username[1])
+        },
+        success: function (resp) {
+          var str = "<option value='all'>By name time</option>";
+          $.each(resp, function (i, item) {
+            str += "<option value='" + item.nameTime + "'>" + item.nameTime + "</option>";
+          });
+          $("#sel1").html(str);
+        },
+      });
+    }
+    function checkUrl(){
+      const obj = JSON.parse(localStorage.getItem('user'));
+      if (obj[0].idposition != 2){
+          location.href = "/view/index.html";
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In & Register !</title>
+  <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style-signin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+    integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.19.0/js/md5.js"
+    integrity="sha512-NpfrQEgzOExS1Ax8fjITKrgBFK87lZbBmvWdZk4suiCC4tsHPrTCsulgIA7Z/+CeWhDpEP/f36mNWgZXDKtTAA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"
+    integrity="sha512-KUrAWA1oxsWKHBaA2mlZyRuR8zzzHHYgpDfkfPrT3FhlZ4YdXbXyE89VHI6WmWradSHtuZjLyLAMP2F7IWK4JQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="fontawesome-free-5.15.3-web/css/all.css" />
+</head>
+
+<body>
+  <!-- main -->
+  <div class="container">
+    <div class="wrapper">
+      <div class="title"><span>Login Account</span></div>
+      <form id="formLogin" method="post">
+        <div class="row">
+          <i class="fas fa-user"></i>
+          <input type="text" placeholder="Username" id="username" name="username" required />
+        </div>
+        <p class="form-text" id="alert-user"></p>
+        <div class="row">
+          <i class="fas fa-lock"></i>
+          <input type="password" placeholder="Password" id="password" name="password" required />
+        </div>
+        <p class="form-text" id="alert-password"></p>
+        <div class="pass"><a href="forgot-password.html">Forgot password !!!</a></div>
+        <div class="row">
+          <button type="submit" id="login">Login</button>
+        </div>
+      </form>
+      <div class="col-3">
+        <div class="modal">
+          <div class="modal-content" style="width: 400px;">
+            <span class="close">&times;</span>
+            <p>Sai thông tin đăng nhập <i style="color: red;" class="fas fa-exclamation-circle"></i>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- loading -->
+  <div class="loader" style="width: 100%;text-align: center;">
+    <div id="loading" class="spinner-border text-warning" style="width: 100px;height: 100px;" role="status"></div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+  <script src="js/signin.js"></script>
+  <script src="js/bootstrap/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      // if (document.cookie != "") {
+      //   location.href = "/view/index.html";
+      // }
+      // click login
+      $('#login').click(function (event) {
+        event.preventDefault();
+        username = $('#username').val();
+        password = $('#password').val();
+        var data = new Object();
+        data.username = username;
+        data.password = password;
+        $.ajax({
+          url: "http://127.0.0.1:8000/users/login/" + username,
+          type: 'POST',
+          data: JSON.stringify(data),
+          dataType: "json",
+          contentType: "application/json",
+          headers: {
+            "Authorization": "Basic " + btoa(data.username)
+          },
+          xhrFields: {
+            withCredentials: true
+          },
+          crossDomain: true,
+          beforeSend: function(){
+            $('.loader').show();
+          },
+          success: function (resp, status , xhr) {
+            localStorage.setItem('user', JSON.stringify(resp));
+            location.href = "/view/index.html";
+          },
+          error: function (resp) {
+            if (resp.status == 400) {
+              $('.modal').show();
+              $('.close').click(function () {
+                $('.modal').hide();
+              });
+              $(window).on('click', function (e) {
+                if ($(e.target).is('.modal')) {
+                  $('.modal').hide();
+                }
+              });
+            }
+          },
+          complete: function(){
+            $('.loader').hide();
+          }
+        });
+      });
+    });
+
+  </script>
+</body>
+
+</html>
