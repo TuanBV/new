@@ -7,7 +7,8 @@ class Permission:
     def __init__(self, roles):
         self._roles = roles
     async def __call__(self, req, resp, resource, params):
-        print(req.headers)
+        # print(req.headers)
+        pass
         # username = req.get_header('Authorization').split(' ')
         # base64_bytes = username[1].encode('ascii')
         # message_bytes = base64.b64decode(base64_bytes)

@@ -25,8 +25,8 @@ class ListUser:
             name = param["name"]
 
             pagination = int(param['page'])-1
+            limit = int(param['limit'])
             sort = param['sort']
-            limit = param['limit']
             data = get_user(pagination, limit, position, year, name, sort)
             if data == []:
                 resp.status = falcon.HTTP_404

@@ -1,9 +1,7 @@
 import json
 import falcon
 import falcon.asgi
-
 import mail_template.user_complete
-from manager.model import connect
 from transcript.model import get_manager
 from manager.model import get_full_by_idtranscript
 from transcript.model import get_user_by_idrranscipt

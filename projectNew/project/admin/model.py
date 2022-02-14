@@ -6,18 +6,24 @@ def get_user(pagination, limit, position, year, name, sort):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
     query = 'select * from user join position on user.idposition = position.idposition where activeStatus=1'
+    data = {}
     if position != 'all':
-        query += ' and user.idposition={}'.format(position)
+        query += ' and user.idposition=%(position)s'
+        data['position'] = position
     if year != '':
-        query += ' and birthday like "%{}%"'.format(year)
+        query += ' and birthday like "%%(year)s%"'
+        data['year'] = int(year)
     if name != '':
-        query += ' and fullname like "%{}%"'.format(name)
+        query += ' and fullname like %(name)s'
+        data['name'] = '%'+name+'%'
     query += ' order by fullname ASC' if sort == "fullname" else ' order by name ASC'
-    cursor.execute(query)
+    cursor.execute(query, data)
     count = cursor.fetchall()
     pagination = int(limit)*int(pagination)
-    query +=  ' limit '+str(pagination)+','+str(limit)
-    cursor.execute(query)
+    query +=  ' limit %(pagination)s,%(limit)s'
+    data['pagination'] = pagination
+    data['limit'] = limit
+    cursor.execute(query, data)
     db = cursor.fetchall()
     for i in db:
         i['birthday'] = str(i['birthday'])
@@ -196,8 +202,10 @@ def get_timerate_of_admin(pagination, limit,nameTime, sort):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
     query = 'select * from kidanhgia where 1=1'
+    data = {}
     if nameTime != "":
-        query += ' and nameTime like "%{}%"'.format(nameTime)
+        query += ' and nameTime like %(nameTime)s'
+        data['nameTime'] = "%"+nameTime+"%"
     if sort == 'nameTimeAsc':
         query += ' order by nameTime ASC'
     if sort == 'nameTimeDesc':
@@ -210,37 +218,47 @@ def get_timerate_of_admin(pagination, limit,nameTime, sort):
         query += ' order by timeEnd ASC'
     if sort == 'sumManagerAsc':
         query += ' order by timeEnd DESC'
-    cursor.execute(query)
+    cursor.execute(query, data)
     count = cursor.fetchall()
     pagination = int(limit)*int(pagination)
-    query +=  ' limit {},{}'.format(pagination, limit)
-    cursor.execute(query)
+    query +=  ' limit %(pagination)s,%(limit)s'
+    data['pagination'] = pagination
+    data['limit'] = limit
+    cursor.execute(query, data)
     db = cursor.fetchall()
     for i in db:
         i['timeStart'] = str(i['timeStart'])
         i['timeEnd'] = str(i['timeEnd'])
         # statistics time rate
-        query1 = 'select count(*) as count1 from bangdiem join user on bangdiem.iduser=user.iduser where activeStatus=1 and idKiDanhGia={}'.format(i['idtime'])
-        cursor.execute(query1)
+        query = 'select count(*) as count1 from bangdiem join user on bangdiem.iduser=user.iduser where activeStatus=1 and idKiDanhGia=%s'
+        cursor.execute(query,(i['idtime'],))
         count1 = cursor.fetchall()
         i['count1'] = count1[0]['count1']
-        query = 'select count(*) as count2 from bangdiem where idKiDanhGia={} and status=2'.format(i['idtime'])
-        cursor.execute(query)
+
+        query = 'select count(*) as count2 from bangdiem where idKiDanhGia=%s and status=2'
+        cursor.execute(query,(i['idtime'],))
         count2 = cursor.fetchall()
         i['count2'] = count2[0]['count2']
+
     conn.close()
     return {'data': db, 'count': len(count)}
+
 # filter transcript detail time rate
 def get_transcritp_detailtimerate(idtimerate, pagination, limit, status, sumScoreUser, sumResultManager, sort):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
-    query = 'select * from bangdiem join user on bangdiem.iduser=user.iduser where activeStatus=1 and idKiDanhGia={}'.format(idtimerate)
+    data = {}
+    query = 'select * from bangdiem join user on bangdiem.iduser=user.iduser where activeStatus=1 and idKiDanhGia=%(idtimerate)s'
+    data['idtimerate'] = (idtimerate)
     if status != "all":
-        query += ' and status={}'.format(status)
+        query += ' and status=%(status)s'
+        data['status'] = status
     if sumScoreUser != '':
-        query += ' and sumScoreUser>{}'.format(sumScoreUser)
+        query += ' and sumScoreUser>%(sumScoreUser)s'
+        data['sumScoreUser'] = sumScoreUser
     if sumResultManager != '':
-        query += ' and sumScoreUser>{}'.format(sumResultManager)
+        query += ' and sumScoreUser>%(sumResultManager)s'
+        data['sumResultManager'] = sumResultManager
     if sort == 'sumUserAsc':
         query += ' order by sumScoreUser ASC'
     if sort == 'sumUserDesc':
@@ -253,11 +271,13 @@ def get_transcritp_detailtimerate(idtimerate, pagination, limit, status, sumScor
         query += ' order by username asc'
     if sort == 'status':
         query += ' order by status '
-    cursor.execute(query)
+    cursor.execute(query, data)
     count = cursor.fetchall()
     pagination = int(limit)*int(pagination)
-    query +=  ' limit {},{}'.format(pagination, limit)
-    cursor.execute(query)
+    query +=  ' limit %(pagination)s,%(limit)s'
+    data['pagination'] = pagination
+    data['limit'] = limit
+    cursor.execute(query, data)
     db = cursor.fetchall()
     for i in db:
         i['birthday'] = str(i['birthday'])

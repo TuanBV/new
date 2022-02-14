@@ -11,12 +11,12 @@ import falcon.asgi
 # get list time rate
 class ListTimeRate:
     # get list time rate of admin
-    @falcon.before(Permission("admin"), is_async=True)
+    # @falcon.before(Permission("admin"), is_async=True)
     async def on_get(self, req, resp, username):
         param = req.params
         nameTime = param['name']
         pagination = int(param['page'])-1
-        limit = param['limit']
+        limit = int(param['limit'])
         sort = param['sort']
         try:
             data = get_timerate_of_admin(pagination, limit, nameTime, sort)

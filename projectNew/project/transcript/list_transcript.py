@@ -11,9 +11,9 @@ class ListTranscript:
         status = param['status']
         sumScoreUser = param['scoreUser']
         sumResultManager = param['scoreManager']
+        
         pagination = int(param['page'])-1
-
-        limit = param['limit']
+        limit = int(param['limit'])
         sort = param['sort']
         try:
             data = get_transcript(username, pagination, limit, nameTime, status, sumScoreUser, sumResultManager, sort)

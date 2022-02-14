@@ -4,15 +4,20 @@ from manager.model import connect
 def get_transcript(username,pagination, limit,nameTime, status, sumScoreUser,sumResultManager, sort):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
+    data = {}
     query = 'select * from bangdiem join user on bangdiem.iduser=user.iduser where username="%s"'%username
     if nameTime != "all":
-        query += ' and nameTranscript="{}"'.format(nameTime)
+        query += ' and nameTranscript=%(nameTime)s'
+        data['nameTime'] = nameTime
     if status != "all":
-        query += ' and status={}'.format(status)
+        query += ' and status=%(status)s'
+        data['status'] = int(status)
     if sumScoreUser != '':
-        query += ' and sumScoreUser>{}'.format(sumScoreUser)
+        query += ' and sumScoreUser>%(sumScoreUser)s'
+        data['sumScoreUser'] = int(sumScoreUser)
     if sumResultManager != '':
-        query += ' and sumScoreUser>{}'.format(sumResultManager)
+        query += ' and sumScoreUser>%(sumResultManager)s'
+        data['sumResultManager'] = int(sumResultManager)
     if sort == 'nameTranscriptAsc':
         query += ' order by nameTranscript ASC'
     if sort == 'nameTranscriptDesc':
@@ -25,11 +30,14 @@ def get_transcript(username,pagination, limit,nameTime, status, sumScoreUser,sum
         query += ' order by sumResultManager ASC'
     if sort == 'sumManagerAsc':
         query += ' order by sumResultManager DESC'
-    cursor.execute(query)
+    cursor.execute(query, data)
     count = cursor.fetchall()
     pagination = int(limit)*int(pagination)
-    query +=  ' limit {},{}'.format(pagination, limit)
-    cursor.execute(query)
+    query +=  ' limit %(pagination)s,%(limit)s'
+    data['pagination'] = pagination
+    data['limit'] = limit
+
+    cursor.execute(query, data)
     db = cursor.fetchall()
     for i in db:
         i['birthday'] = str(i['birthday'])

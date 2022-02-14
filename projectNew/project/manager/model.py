@@ -1,4 +1,4 @@
-from tkinter import Y
+from unicodedata import name
 from mysql.connector import MySQLConnection, Error
 
 def connect():
@@ -37,8 +37,8 @@ def get_full_by_idtranscript(idtranscript):
         cursor.execute(query)
         standard = cursor.fetchall()
         i['standard'] = standard
-        query = 'select count(*) as count from standard where idtarget=%s'%(i['idtarget'])
-        cursor.execute(query)
+        query = 'select count(*) as count from standard where idtarget=%s'
+        cursor.execute(query,((i['idtarget']),))
         i['count'] = cursor.fetchall()[0]['count'] + 1
     conn.close()
     return {'infor': infor,'target': target}
@@ -48,14 +48,19 @@ def get_transcript_of_manager(pagination, limit, nameTime, status, sumScoreUser,
     conn = connect()
     cursor = conn.cursor(dictionary=True)
     query = 'select * from bangdiem join user on bangdiem.iduser=user.iduser where activeStatus=1'
+    data ={}
     if nameTime != "all":
-        query += ' and nameTranscript="'+ str(nameTime)+'"'
+        query += ' and nameTranscript=%(nameTime)s'
+        data['nameTime'] = nameTime
     if status != "all":
-        query += ' and status='+str(status)
+        query += ' and status=%(status)s'
+        data['status'] = int(status)
     if sumScoreUser != '':
-        query += ' and sumScoreUser>'+str(sumScoreUser)
+        query += ' and sumScoreUser>%(sumScoreUser)s'
+        data['sumScoreUser'] = int(sumScoreUser)
     if sumResultManager != '':
-        query += ' and sumScoreUser>'+str(sumResultManager)
+        query += ' and sumScoreUser>%(sumResultManager)s'
+        data['sumResultManager'] = int(sumResultManager)
     if sort == 'nameTranscript':
         query += ' order by nameTranscript'
     elif sort == 'sumUserAsc':
@@ -70,12 +75,14 @@ def get_transcript_of_manager(pagination, limit, nameTime, status, sumScoreUser,
         query += ' order by username ASC'
     elif sort == 'status':
         query += ' order by status '
-    cursor.execute(query)
+    cursor.execute(query, data)
     count = cursor.fetchall()
     count = 0 if count == [] else len(count)
     pagination = int(limit)*int(pagination)
-    query +=  ' limit '+str(pagination)+','+str(limit)
-    cursor.execute(query)
+    query +=  ' limit %(pagination)s, %(limit)s'
+    data['pagination'] = pagination
+    data['limit'] = limit
+    cursor.execute(query, data)
     db = cursor.fetchall()
     for i in db:
         i['birthday'] = str(i['birthday'])
@@ -91,7 +98,7 @@ def update_trancript_of_manager(status, sumResultManager, ghichu, id):
     conn = connect()
     cursor = conn.cursor()
     query = 'update bangdiem set status=%s, sumResultManager=%s, ghichu=$s where idtranscript=%s'
-    cursor.execute(query,(status, sumResultManager, ghichu, id))
+    cursor.execute(query,(status, sumResultManager, ghichu, id,))
     conn.commit()
     conn.close()
     
@@ -104,6 +111,6 @@ def update_standard_od_manager(QLDanhGia, NhanXet, id, idstandard):
         cursor.execute(query,(QLDanhGia, id, idstandard))
     else: 
         query = "update tieuchi set QLDanhGia=%s,NhanXet=%s where idBangDiem=%s and idstandard=%s"
-        cursor.execute(query,(QLDanhGia, NhanXet, id, idstandard))
+        cursor.execute(query,(QLDanhGia, NhanXet, id, idstandard,))
     conn.commit()
     conn.close()

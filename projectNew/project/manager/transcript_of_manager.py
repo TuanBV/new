@@ -1,7 +1,7 @@
 import json
 import falcon
 import falcon.asgi
-from manager.model import get_transcript_of_manager, get_full_by_idtranscript, connect, update_trancript_of_manager, update_standard_od_manager
+from manager.model import get_transcript_of_manager, get_full_by_idtranscript, update_trancript_of_manager, update_standard_od_manager
 from transcript.model import get_user_by_idrranscipt
 from helper.functions import send_email
 from hook.permission import Permission
@@ -13,12 +13,11 @@ class TranscriptOfManager:
     async def on_get(self, req, resp, username):
         param = req.params
         nameTime = param['nameTime']
-        status = param['status']
+        status = param['status']        
         sumScoreUser = param['scoreUser']
         sumResultManager = param['scoreManager']
-        
         pagination = int(param['page'])-1
-        limit = param['limit']
+        limit = int(param['limit'])
         sort = param['sort']
         try:
             data = get_transcript_of_manager(pagination, limit, nameTime, status, sumScoreUser, sumResultManager, sort)
