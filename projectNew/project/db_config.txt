@@ -1,7 +1,0 @@
-db_config = {
-    'host': 'localhost',
-    'port':'3306',
-    'database': 'employee',
-    'user': 'root',
-    'password': '12345'
-}

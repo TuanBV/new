@@ -52,7 +52,6 @@
 
 <script>
 export default {
-    name: 'Home',
     setup() {
         const obj = JSON.parse(localStorage.getItem('user'))[0];
         var fullname = obj.fullname;

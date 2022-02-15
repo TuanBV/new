@@ -288,15 +288,12 @@ def get_transcritp_detailtimerate(idtimerate, pagination, limit, status, sumScor
     conn.close()
     return db
 # get manager by censor
-def get_manager_by_censor_email(censor_email):
+def get_manager_by_censor(censor):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
-    query = 'select * from user where email=%s'
-    cursor.execute(query,(censor_email,))
+    query = 'select username, email from user where username=%s'
+    cursor.execute(query,(censor,))
     db = cursor.fetchall()
-    for user in db:
-        user['birthday'] = str(user['birthday'])
-        user['timetoken'] = str(user['timetoken'])
     conn.close()
     return db
 

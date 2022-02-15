@@ -4,8 +4,8 @@ import falcon.asgi
 import mail_template.user_complete
 from transcript.model import get_manager
 from manager.model import get_full_by_idtranscript
-from transcript.model import get_user_by_idrranscipt
-from admin.model import get_manager_by_censor_email
+from transcript.model import get_user_by_idtranscript
+from admin.model import get_manager_by_censor
 from helper.functions import send_email
 import mail_template.user_confirm
 #Standard
@@ -52,55 +52,52 @@ class Transcript:
     # send transcript for manager or save transcript
     async def on_put(self, req, resp, username, idtranscript):
         param = await req.media
-        standards = param['db']
-        id = param['id']
-        sumUser = param['sumUser']
-        opinion = param['opinion']
-        censor_email = param['censor']
-        status = param['status']
-        timework = param['timework']
-        timeworkend = param['timeworkend']
-        # update standard
-        transcript = get_full_by_idtranscript(id)
-        try:
-            for standard in standards:
-                idstandard = standard['id']
-                TuDanhGia = standard['TuDanhGia']
-                update_tieuchi(TuDanhGia, id, idstandard)
-        except Exception as e:
-            print(e)  
-        # update opinion when manager confirm transcript
-        if opinion == "":
-            user_confirm_transcript(sumUser, timework, timeworkend, id)
+        infors = param['infors']
+        targets = param['targets']
+        # infor transcript
+        status = int(infors[0]['status'])
+        sumScoreUser = int(infors[0]['sumScoreUser'])
+        censor = infors[0]['censor']
+        opinion = infors[0]['opinion']
+        timework = infors[0]['timework']
+        timeworkend = infors[0]['timeworkend']
+        # score targets
+        targets = param['targets']
+        for target in targets:
+            # update tieuchi
+            for standard in target['standard']:
+                update_tieuchi(standard['TuDanhGia'], idtranscript, standard['idstandard'])
+        transcript = get_full_by_idtranscript(idtranscript)
+        manager_by_censor = get_manager_by_censor(censor)
+        if opinion == "" or opinion == None:
+            # update sumScoreUser, timework, timeworkend when user confirm transcript
+            user_confirm_transcript(sumScoreUser, timework, timeworkend, idtranscript)
         else:
-            user_complete_transcript(opinion, id)
+            # update opinion when manager confirm transcript
+            user_complete_transcript(opinion, idtranscript)
             try: 
-                data = get_user_by_idrranscipt(id)
-                # send email
+                data = get_user_by_idtranscript(idtranscript)
+                # send email for mail system when user update opinion 
                 receiver_email = "tuanbv@saisystem.vn"
                 title = "Employee Complete Assessment"
                 text = mail_template.user_complete.BODY_TEXT.format(data[0]['iduser'], data[0]['username'], data[0]['fullname'], data[0]['nameTranscript'])
                 send_email(receiver_email, title, text)
             except Exception as e:
                 print(e)  
-        # send email for manager
-        manager_by_censor_email = get_manager_by_censor_email(censor_email)
-        try:
-            if status == 1:
-                update_transcript(manager_by_censor_email[0]['username'], status, id)
-                # send email
-                receiver_email = censor_email
-                title = "Pending Transcipt!"
-                text = mail_template.user_confirm.BODY_TEXT.format(transcript[0]['iduser'], transcript[0]['username'], transcript[0]['fullname'], transcript[0]['nameTranscript'])
-                send_email(receiver_email, title, text)
-            elif status == 4:
-                if censor_email != '':
-                    update_transcript(manager_by_censor_email[0]['username'], status, id)
-                else:
-                    censor = ''
-                    update_transcript(censor,status, id)
-        except Exception as e:
-            print(e)
+        if status == 1:
+            # update status and censor transcript
+            update_transcript(manager_by_censor[0]['username'], status, idtranscript)
+            # send email for manager when user confirm transcript
+            receiver_email = manager_by_censor[0]['email']
+            title = "Pending Transcipt!"
+            text = mail_template.user_confirm.BODY_TEXT.format(transcript[0]['iduser'], transcript[0]['username'], transcript[0]['fullname'], transcript[0]['nameTranscript'])
+            send_email(receiver_email, title, text)
+        elif status == 4:
+            if censor != '':
+                update_transcript(manager_by_censor[0]['username'], status, idtranscript)
+            else:
+                censor = ''
+                update_transcript(censor,status, idtranscript)
         resp.content_type = falcon.MEDIA_JSON
-        resp.status = falcon.HTTP_OK
+        resp.status = falcon.HTTP_200
         resp.text = json.dumps({'status': resp.status})

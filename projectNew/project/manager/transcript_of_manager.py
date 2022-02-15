@@ -1,8 +1,9 @@
+from distutils.log import info
 import json
 import falcon
 import falcon.asgi
-from manager.model import get_transcript_of_manager, get_full_by_idtranscript, update_trancript_of_manager, update_standard_od_manager
-from transcript.model import get_user_by_idrranscipt
+from manager.model import get_transcript_of_manager, update_trancript_of_manager, update_tieuchi_od_manager
+from transcript.model import get_user_by_idtranscript
 from helper.functions import send_email
 from hook.permission import Permission
 import mail_template.manager_reject
@@ -34,43 +35,33 @@ class TranscriptOfManager:
     # @falcon.before(Permission('manager'), is_async=True)
     async def on_put(self, req, resp, username):
         param = await req.media
-        standards = param['db']
-        sumResultManager = param['sumManager']
-        ghichu = param['ghichu']
-        status = param['status']
-        censor = param['censor']
-        id = param['id']
-        transcript = get_full_by_idtranscript(id)
+        infors = param['infors'][0]
+        targets = param['targets']
+        # infor transcript
+        idtranscript = infors['idtranscript']
+        status = infors['status']
+        sumResultManager = infors['sumResultManager']
+        ghichu = infors['ghichu']
+        # score targets
+        member = get_user_by_idtranscript(idtranscript)
         if status == 3:
-            member = get_user_by_idrranscipt(id)
-            try: 
-                # send email for user
-                receiver_email =  member[0]['email'] # Enter receiver address
-                title = "The Transcript Not Approved !!"
-                text = mail_template.manager_reject.BODY_TEXT.format(transcript[0]['nameTranscript'], transcript[0]['username'], transcript[0]['fullname'], transcript[0]['nameTranscript'])
-                send_email(receiver_email, title, text)
-            except Exception as e:
-                print(e)
+            # send email for user when manager reject transcript
+            receiver_email =  member[0]['email']
+            title = "The Transcript Not Approved !!"
+            text = mail_template.manager_reject.BODY_TEXT.format(idtranscript, member[0]['username'], member[0]['fullname'], infors['nameTranscript'])
+            send_email(receiver_email, title, text)
         if status == 2:
-            member = get_user_by_idrranscipt(id)
-            # send email
+            # send email for user when manager confirm transcript
             receiver_email = member[0]['email']
             title = "Your Transcript Approved!!"
-            text = mail_template.manager_confirm.BODY_TEXT.format(transcript[0]['iduser'], transcript[0]['username'], transcript[0]['fullname'], transcript[0]['nameTranscript'])
+            text = mail_template.manager_confirm.BODY_TEXT.format(idtranscript, member[0]['username'], member[0]['fullname'], infors['nameTranscript'])
             send_email(receiver_email, title, text)
-        try: 
-            update_trancript_of_manager(status, sumResultManager, ghichu, id)
-            for standard in standards:
-                idstandard = standard['id']
-                QLDanhGia = standard['QLDanhGia'] 
-                if standard['NhanXet'] == "":
-                    NhanXet = ""
-                    update_standard_od_manager(QLDanhGia,NhanXet, id, idstandard)
-                else:
-                    NhanXet = standard['NhanXet']
-                    update_standard_od_manager(QLDanhGia, NhanXet, id, idstandard)
-        except Exception as e:
-            print(e)
+        # update status (sumResultManager, ghichu) of transcript
+        update_trancript_of_manager(status, sumResultManager, ghichu, idtranscript)
+        # update score QLDanhGia, NhanXet of manager
+        for target in targets:
+            for standard in target['standard']:
+                update_tieuchi_od_manager(standard['TuDanhGia'], standard['QLDanhGia'], standard['NhanXet'], idtranscript, standard['idstandard'])
         resp.content_type = falcon.MEDIA_JSON
         resp.status = falcon.HTTP_OK
         resp.text = json.dumps({'status':resp.status})

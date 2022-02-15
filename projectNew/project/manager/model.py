@@ -1,6 +1,8 @@
-from unicodedata import name
+from distutils.log import info
+import json
+from time import process_time_ns
 from mysql.connector import MySQLConnection, Error
-
+# connect datatbase
 def connect():
     db_config = {
         'host': 'localhost',
@@ -17,23 +19,29 @@ def connect():
     except Error as e:
         print(e)
     return conn
+
 #get data full by idtranscript
 def get_full_by_idtranscript(idtranscript):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
-    query = 'select * from bangdiem join kidanhgia on bangdiem.idKiDanhGia = kidanhgia.idTime where idtranscript=%s'
+    query = 'select * from (bangdiem join kidanhgia on bangdiem.idKiDanhGia = kidanhgia.idTime) join user on user.iduser=bangdiem.iduser where idtranscript=%s'
     cursor.execute(query,(idtranscript,))
     infor = cursor.fetchall()
     for i in infor:
+        i.pop('password')
+        i.pop('idtoken')
+        i.pop('timetoken')
+        i['birthday'] = str(i['birthday'])
+        i['timework'] = str(i['timework'])
+        i['timeworkend'] = str(i['timeworkend'])
         i['timeStart'] = str(i['timeStart'])
         i['timeEnd'] = str(i['timeEnd'])
-
     query = 'select * from target'
     cursor.execute(query)
     target = cursor.fetchall()
 
     for i in target:
-        query = 'select sumScoreUser,sumResultManager,nameStandard,scoreStandard,TuDanhGia,QLDanhGia,NhanXet, idtranscript,idtarget from (bangdiem join tieuchi on bangdiem.idtranscript = tieuchi.idBangDiem) join standard on tieuchi.idstandard=standard.id where idtranscript=%s and idtarget=%s'%(idtranscript, i['idtarget'])
+        query = 'select idstandard,sumScoreUser,sumResultManager,nameStandard,scoreStandard,TuDanhGia,QLDanhGia,NhanXet, idtranscript,idtarget from (bangdiem join tieuchi on bangdiem.idtranscript = tieuchi.idBangDiem) join standard on tieuchi.idstandard=standard.id where idtranscript=%s and idtarget=%s'%(idtranscript, i['idtarget'])
         cursor.execute(query)
         standard = cursor.fetchall()
         i['standard'] = standard
@@ -94,23 +102,38 @@ def get_transcript_of_manager(pagination, limit, nameTime, status, sumScoreUser,
     return {'data': db, 'count':count}
 
 # update transcript of manager
-def update_trancript_of_manager(status, sumResultManager, ghichu, id):
+def update_trancript_of_manager(status, sumResultManager, ghichu, idtranscript):
     conn = connect()
     cursor = conn.cursor()
-    query = 'update bangdiem set status=%s, sumResultManager=%s, ghichu=$s where idtranscript=%s'
-    cursor.execute(query,(status, sumResultManager, ghichu, id,))
+    data = {}
+    query = 'update bangdiem set status=%(status)s,ghichu=%(ghichu)s'
+    data['status'] = int(status)
+    data['ghichu'] = ghichu
+    if sumResultManager != 0:
+        query += ',sumResultManager=%(sumResultManager)s'
+        data['sumResultManager'] = int(sumResultManager)
+    query += ' where idtranscript=%(idtranscript)s'
+    data['idtranscript'] = int(idtranscript)
+    cursor.execute(query,data)
     conn.commit()
     conn.close()
     
-# update standard of manager
-def update_standard_od_manager(QLDanhGia, NhanXet, id, idstandard):
+# update tieuchi of manager
+def update_tieuchi_od_manager(TuDanhGia, QLDanhGia, NhanXet, idtranscript, idstandard):
     conn = connect()
     cursor = conn.cursor()
-    if NhanXet == "":
-        query = "update tieuchi set QLDanhGia=%s where idBangDiem=%s and idstandard=%s".format(QLDanhGia, id, idstandard)
-        cursor.execute(query,(QLDanhGia, id, idstandard))
-    else: 
-        query = "update tieuchi set QLDanhGia=%s,NhanXet=%s where idBangDiem=%s and idstandard=%s"
-        cursor.execute(query,(QLDanhGia, NhanXet, id, idstandard,))
+    data = {}
+    query = "update tieuchi set TuDanhGia=%(TuDanhGia)s"
+    data['TuDanhGia'] = int(TuDanhGia)
+    if QLDanhGia != 0:
+        query += ',QLDanhGia=%(QLDanhGia)s'
+        data['QLDanhGia'] = int(QLDanhGia)
+    if NhanXet != None:
+        query += ',NhanXet=%(NhanXet)s'
+        data['NhanXet'] = NhanXet
+    query += ' where idBangDiem=%(idtranscript)s and idstandard=%(idstandard)s'
+    data['idtranscript'] = int(idtranscript)
+    data['idstandard'] = int(idstandard)
+    cursor.execute(query,data)
     conn.commit()
     conn.close()

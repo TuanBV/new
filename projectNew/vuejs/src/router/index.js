@@ -1,16 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Transcript from '../views/transcript.vue'
-import TranscriptEmployee from '../views/TranscriptEmployee.vue'
-import Admin from '../views/admin/admin.vue'
-import TimeRate from '../views/admin/timerate.vue'
-import Manager from '../views/manager/manager.vue'
-import ChangePassword from '../views/ChangePassword.vue'
-
-import AddUser from '../views/admin/add-user.vue'
-import EditUser from '../views/admin/edit-user.vue'
-import ForgotPassword from '../components/forgot-password.vue'
-
 const routes = [
   {
     path: '/login',
@@ -19,14 +7,14 @@ const routes = [
       layout: 'default'
     },
     component: ()=> import('../views/login.vue')
-  },  
+  },        
   {
     path: '/forgot-password',
     name: 'ForgotPassword',
     meta:{
       layout: 'default'
     },
-    component: ForgotPassword
+    component: () => import('../views/forgot-password.vue')
   },  
   {
     path: '/',
@@ -34,7 +22,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: Home
+    component: () => import('../views/home.vue')
   },
   {
     path: '/transcript',
@@ -42,7 +30,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: Transcript
+    component: () => import('../views/transcript.vue')
   },
   {
     path: '/transcript-employee',
@@ -50,7 +38,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: TranscriptEmployee
+    component: () => import('../views/transcript-employee.vue')
   },
   // user
   {
@@ -59,7 +47,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: Admin
+    component: () => import('../views/admin/admin.vue')
   },  
   {
     path: '/admin/add-user',
@@ -67,7 +55,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: AddUser
+    component: () => import('../views/admin/add-user.vue')
   },  
   {
     path: '/admin/edit-user',
@@ -75,7 +63,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: EditUser
+    component: () => import('../views/admin/edit-user.vue')
   },
   // time rate
   {
@@ -84,7 +72,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: TimeRate
+    component: () => import('../views/admin/timerate.vue')
   },  
   {
     path: '/admin/add-time-rate',
@@ -117,7 +105,15 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: Manager
+    component: () => import('../views/manager/manager.vue')
+  },
+  {
+    path: '/confirm-transcript-employee',
+    name: 'ConfirmTranscriptEmployee',
+    meta:{
+      layout: 'auth'
+    },
+    component: () => import('../views/manager/confirm-transcrip-employee.vue')
   },  
   {
     path: '/change-password',
@@ -125,7 +121,7 @@ const routes = [
     meta:{
       layout: 'auth'
     },
-    component: ChangePassword
+    component: () => import('../views/changepassword.vue')
   }
 ]
 

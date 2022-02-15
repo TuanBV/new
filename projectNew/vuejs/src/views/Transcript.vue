@@ -61,9 +61,10 @@
             <option value="20">Get 20 record</option>
           </select>
         </div>
-        <!-- <div class="col-3" style="line-height: 38px;" id="sumfilter"> -->
-          <!-- load sum filter transcript -->
-        <!-- </div> -->
+        <div class="col-2" style="line-height: 38px;">
+          Has {{ number_record }} record
+        </div>
+
       </div>
       <table class="table border">
         <thead>
@@ -79,18 +80,25 @@
         </thead>
         <!-- load transcript of user -->
         <tbody>
-          <tr v-for="(transcipt, index) in transcripts" :key="index">
+          <tr v-for="(transcript, index) in transcripts" :key="index">
+            
             <td scope="col">{{ param.limit*(param.page-1)+index+1 }}</td>
-            <td scope="col">{{ transcipt.nameTranscript }}</td>
-            <td scope="col">{{ transcipt.status }}</td>
-            <td scope="col" v-if="transcipt.censor == ''">{{ transcipt.censor }}</td>
+            <td scope="col">{{ transcript.nameTranscript }}</td>
+            <td scope="col">
+              <p v-if="transcript.status == 0">Chưa tạo</p>
+              <p v-else-if="transcript.status == 1">Chờ duyệt</p>
+              <p v-else-if="transcript.status == 2">Đã duyệt</p>
+              <p v-else-if="transcript.status == 3">Trả lại</p>
+              <p v-else>Lưu tạm</p>
+            </td>
+            <td scope="col" v-if="transcript.censor != ''">{{ transcript.censor }}</td>
             <td scope="col" v-else>...</td>
-            <td width="15%">{{ transcipt.sumScoreUser }}</td>
-            <td width="15%">{{ transcipt.sumResultManager }}</td>
+            <td width="15%">{{ transcript.sumScoreUser }}</td>
+            <td width="15%">{{ transcript.sumResultManager }}</td>
             <td scope="col-2">
-              <router-link :to="{path:'/transcript-employee', query: { id: transcipt.idtranscript }}" v-if="transcipt.status == 0"><button class='btn btn-warning'>Create</button></router-link>
-              <router-link :to="{path:'/transcript-employee', query: { id: transcipt.idtranscript }}" v-else-if="transcipt.status == 2"><button class='btn btn-warning'>View</button></router-link>
-              <router-link :to="{path:'/transcript-employee', query: { id: transcipt.idtranscript }}" v-else><button class='btn btn-warning'>Edit</button></router-link>
+              <router-link :to="{path:'/transcript-employee', query: { id: transcript.idtranscript }}" v-if="transcript.status == 0"><button class='btn btn-warning'>Create</button></router-link>
+              <router-link :to="{path:'/transcript-employee', query: { id: transcript.idtranscript }}" v-else-if="transcript.status == 2 || transcript.status==1"><button class='btn btn-warning'>View</button></router-link>
+              <router-link :to="{path:'/transcript-employee', query: { id: transcript.idtranscript }}" v-else><button class='btn btn-warning'>Edit</button></router-link>
             </td>
           </tr>
         </tbody>
@@ -118,15 +126,12 @@
 import axios from 'axios'
 import { reactive, ref } from '@vue/reactivity';
 import { onMounted } from '@vue/runtime-core';
-// import { useRouter } from 'vue-router'
 export default {
   setup() {
     const transcripts = ref([]);
     const conditions = ref([]);
-    const loading = ref(true)
-    // const router = useRouter();
-    
     const pages = ref(0);
+    const number_record = ref(0)
 
     // condition filter
     const param = reactive({
@@ -142,11 +147,12 @@ export default {
     const obj = JSON.parse(localStorage.getItem('user'))[0];
     var username = obj.username;
 
+    // methods
+    // load condition 
     const load_condition = async () =>{
       try {
         const response = await axios.get('http://localhost:8000/condition-nametime');
         conditions.value = response.data;
-        loading.value = false;
       } catch (error) {
         console.log(error.message);
       }
@@ -154,15 +160,12 @@ export default {
     // load data
     const load_data = async () => {
       try {
-        // router.push({query: {'page': param.page, 'limit': param.limit}});
         const response = await axios.get('http://localhost:8000/user/'+ username +'/transcript', {params : param}, {headers: {token: document.cookie.split('=')[1]}});
         transcripts.value = response.data.data;
+        number_record.value = response.data.count
         pages.value = Math.ceil(response.data.count/param.limit);
-        loading.value = true;
       } catch (error) {
         console.log(error);
-      }finally{
-        loading.value = false;
       }
     }
     // delete condition filter
@@ -182,15 +185,16 @@ export default {
       load_data();
     })
     return {
+      conditions,
       username,
       param,
       pages,
+      transcripts,
+      number_record,
+      // methods
       load_condition,
       reset_condition,
       load_data,
-      conditions,
-      transcripts,
-      loading
     }
   }
 }

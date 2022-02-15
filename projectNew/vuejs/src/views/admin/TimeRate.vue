@@ -1,10 +1,5 @@
 <template>
-  <div v-if="loading">
-    <div style="text-align: center;margin-top: 200px">
-        Loading...<div id="loading" class="spinner-border text-warning" style="width: 20px;height: 20px;" role="status"></div>
-    </div>
-  </div>
-  <div v-else id="timerate">
+  <div id="timerate">
     <div class="container" v-if="show">
       <div v-if="isShow==false">
         <div class="row mb-2">
@@ -42,9 +37,9 @@
                 <option value="8">Get 8 record</option>
               </select>
             </div>
-            <div class="col-3" style="line-height: 38px;" id="sumfilter">
-                <!-- load sum filter time rate -->
-              </div>
+            <div class="col-2" style="line-height: 38px;">
+              Has {{ number_record }} record
+            </div>
         </div>
         <table class="table table-striped border">
             <thead>
@@ -145,11 +140,12 @@ export default {
   name: "timerate",
   setup() {
     const timerates = ref([]);
-    const loading = ref(false);
     const show = ref(true);
     const isShow = ref(false);
 
+
     const pages = ref(0);
+    const number_record = ref(0);
     const obj = JSON.parse(localStorage.getItem('user'))[0];
     var username = obj.username;
 
@@ -170,15 +166,12 @@ export default {
     }
     const load_timerate = async () => {
       try {
-        // router.push({'path':'/time-rate',query: {'page': param.page, 'limit': param.limit}});
         const response = await axios.get('http://localhost:8000/admin/'+ username +'/timerate', {params : param}, {headers: {token: '1111111'} },{ withCredentials: true });
         timerates.value = response.data.data;
+        number_record.value = response.data.count
         pages.value = Math.ceil(response.data.count/param.limit);
-        loading.value = true;
       } catch (error) {
         console.log(error.message);
-      } finally{
-        loading.value = false;
       }
     }
 
@@ -215,13 +208,13 @@ export default {
     })
     return {
       username,
-      loading,
       param,
       timerates,
       show,
       isShow,
       data,
       pages,
+      number_record,
       load_timerate,
       reset_condition,
       delete_timerate,

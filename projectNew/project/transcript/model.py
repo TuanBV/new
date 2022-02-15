@@ -1,3 +1,4 @@
+from asyncio import QueueEmpty
 from manager.model import connect
 # ------------------- not injection 
 #transcript user
@@ -70,8 +71,10 @@ def get_manager():
     cursor.execute(query)
     db = cursor.fetchall()
     for i in db:
+        i.pop('password')
+        i.pop('idtoken')
+        i.pop('timetoken')
         i['birthday'] = str(i['birthday'])
-        i['timetoken'] = str(i['timetoken'])
     conn.close()
     return db
 # get data from bangdiem - kidanhgia - position
@@ -90,52 +93,52 @@ def get_transcript_join_timerate():
         i['timeworkend'] = str(i['timeworkend'])
     return db
 # get information user by idtranscript
-def get_user_by_idrranscipt(idtranscript):
+def get_user_by_idtranscript(idtranscript):
     conn = connect()
     cursor = conn.cursor(dictionary=True)
     query = 'select * from bangdiem join user on bangdiem.iduser=user.iduser where idtranscript=%s'
     cursor.execute(query,(idtranscript,))
     db = cursor.fetchall()
-    for i in db:
-        i['birthday'] = str(i['birthday'])
-        i['timetoken'] = str(i['timetoken'])
-        i['timework'] = str(i['timework'])
-        i['timeworkend'] = str(i['timeworkend'])
     conn.close()
     return db
-# update standard
-def update_tieuchi(TuDanhGia, id, idstandard):
+# update tieuchi
+def update_tieuchi(TuDanhGia, idtranscript, idstandard):
     conn = connect()
     cursor = conn.cursor()
     query = "update tieuchi set TuDanhGia=%s where idBangDiem=%s and idstandard=%s"
-    cursor.execute(query,(TuDanhGia, id, idstandard,))
+    cursor.execute(query,(TuDanhGia, idtranscript, idstandard,))
     conn.commit()
     conn.close()
+
 # update censor and status of transcript
-def update_transcript(censor, status, id):
+def update_transcript(censor, status, idtranscript):
     conn = connect()
     cursor = conn.cursor()
-    if censor == "":
-        query = 'update bangdiem set status=%s where idtranscript=%s'
-        cursor.execute(query,(status, id,))
-    else:
-        query = 'update bangdiem set censor=%s ,status=%s where idtranscript=%s'
-        cursor.execute(query,(censor, status, id,))
+    data = {}
+    query = 'update bangdiem set status=%(status)s'
+    data['status'] = int(status)
+    if censor!= "":
+        query += ',censor=%(censor)s'
+        data['censor'] = censor
+    query += ' where idtranscript=%(idtranscript)s'
+    data['idtranscript'] = idtranscript
+    cursor.execute(query,data)
     conn.commit()
     conn.close()
 # user confirm transcript
-def user_confirm_transcript(sumUser, timework, timeworkend, id):
+def user_confirm_transcript(sumScoreUser, timework, timeworkend, idtranscript):
     conn = connect()
     cursor = conn.cursor()
     query = 'update bangdiem set sumScoreUser=%s, timework=%s, timeworkend=%s where idtranscript=%s'
-    cursor.execute(query,(sumUser, timework, timeworkend, id,))
+    cursor.execute(query,(sumScoreUser, timework, timeworkend, idtranscript,))
     conn.commit()
     conn.close()
+
 # user confirm transcript
-def user_complete_transcript(opinion, id):
+def user_complete_transcript(opinion, idtranscript):
     conn = connect()
     cursor = conn.cursor()
-    query = 'update bangdiem set opinionMember=%s where idtranscript=%s'
-    cursor.execute(query,(opinion, id,))
+    query = 'update bangdiem set opinion=%s where idtranscript=%s'
+    cursor.execute(query,(opinion, idtranscript,))
     conn.commit()
     conn.close()

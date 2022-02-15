@@ -43,7 +43,7 @@
           </select>
         </div>
         <div class="col-2" style="line-height: 38px;">
-          Filter {{ number_record }} record
+          Has {{ number_record }} record
         </div>
       </div>
       <table class="table table-striped border" width="100%">
@@ -101,7 +101,7 @@ export default {
     const router = useRouter();
     const pages = ref(0);
     const number_record = ref(0);
-    const isloading = useLoading();
+    const loading = useLoading();
     // condition filter
     const param = reactive({
       position: 'all',
@@ -133,12 +133,11 @@ export default {
     // load user
     const load_user = async () => {
       try {
-        const loader = isloading.show({
+        const loader = loading.show({
           fullPage: true,
           canCancel: true,
           useSlot: false,
           loader: 'bars',
-          timeout: 3000, //ms
           color: '#00ab00',
           bgColor: '#4b4b4b',
           height: 64,
@@ -178,5 +177,8 @@ export default {
 }
 router-link{
   color: white;
+}
+.vld-overlay {
+  float: right;
 }
 </style>

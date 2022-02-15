@@ -58,8 +58,8 @@
             <option value="30">Get 30 record</option>
           </select>
         </div>
-        <div class="col-3" style="line-height: 38px;" id="sumfilter">
-          <!-- load sum filter transcript -->
+        <div class="col-2" style="line-height: 38px;">
+          Has {{ number_record }} record
         </div>
       </div>
       <table class="table table-striped border" width="100%">
@@ -82,11 +82,17 @@
             <td width="20%">{{ transcript.nameTranscript }}</td>
             <td width="10%">{{ transcript.username }}</td>
             <td width="10%">{{ transcript.fullname }}</td>
-            <td width="10%">{{ transcript.status }}</td>
-            <td width="10%">{{ transcript.sumResultManager }}</td>
-            <td width="10%">{{ transcript.sumScoreUser }}</td>
             <td width="10%">
-              <router-link :to="{path:'/transcript-employee', query: { id: transcript.idtranscript }}" v-if="transcript.status == 1 || transcript.status == 2"><button class='btn btn-warning'>View</button></router-link>
+              <p v-if="transcript.status == 0">Chưa tạo</p>
+              <p v-else-if="transcript.status == 1">Chờ duyệt</p>
+              <p v-else-if="transcript.status == 2">Đã duyệt</p>
+              <p v-else-if="transcript.status == 3">Trả lại</p>
+              <p v-else>Lưu tạm</p>
+            </td>
+            <td width="10%">{{ transcript.sumScoreUser }}</td>
+            <td width="10%">{{ transcript.sumResultManager }}</td>
+            <td width="10%">
+              <router-link :to="{path:'/confirm-transcript-employee', query: { id: transcript.idtranscript }}" v-if="transcript.status == 1 || transcript.status == 2"><button class='btn btn-warning'>View</button></router-link>
             </td>
           </tr>
         </tbody>
@@ -110,6 +116,7 @@ export default {
     const transcripts = ref([]);
     const conditions = ref([]);
     const pages = ref(0);
+    const number_record = ref(0);
 
     const obj = JSON.parse(localStorage.getItem('user'))[0];
     const username = obj.username;
@@ -135,9 +142,9 @@ export default {
     // load data
     const load_data = async () => {
       try {
-        console.log(param);
         const response = await axios.get('http://localhost:8000/manager/'+ username +'/transcript', {params : param}, {headers: {token: document.cookie.split('=')[1]}});
         transcripts.value = response.data.data;
+        number_record.value = response.data.count;
         pages.value = Math.ceil(response.data.count/param.limit);
       } catch (error) {
         console.log(error.message);
@@ -163,6 +170,7 @@ export default {
       load_condition,
       reset_condition,
       load_data,
+      number_record,
       param,
       conditions,
       transcripts,
@@ -171,3 +179,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+td{
+  height: 55px;
+}
+</style>
